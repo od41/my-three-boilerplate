@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { DoubleSide } from 'three';
 
+import vertex from './shaders/vertex'
+import fragment from './shaders/fragment'
+
 export default class Sketch {
     constructor() {
         // insert stuff
@@ -23,9 +26,16 @@ export default class Sketch {
     addMesh() {
         // code
         this.geometry = new THREE.PlaneBufferGeometry(1, 1);
-        this.material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+        this.material = new THREE.ShaderMaterial({
+            fragmentShader: fragment,
+            vertexShader: vertex,
+            uniforms: {
+                time: this.time,
+            },
+            side: THREE.DoubleSide
+        });
 
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh = new THREE.Points(this.geometry, this.material);
         this.scene.add(this.mesh);
     }
 
@@ -41,7 +51,7 @@ export default class Sketch {
         // code
         this.time++
         this.mesh.rotation.x += 0.01;
-        this.mesh.rotation.y += 0.02;
+        this.mesh.rotation.y += Math.sin(0.02);
         this.renderer.render(this.scene, this.camera);
 
         window.requestAnimationFrame(this.render.bind(this))
